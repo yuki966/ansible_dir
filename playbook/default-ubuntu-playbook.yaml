@@ -1,0 +1,61 @@
+- name: Setup Ubuntu 22.04 Server
+  hosts:
+    - all
+  become: True
+  tasks:
+    - name: Change Package archive repository to jp
+      replace:
+        path: /etc/apt/sources.list
+        backup: yes
+        regexp: '\/archive\.ubuntu'
+        replace: '/jp.archive.ubuntu'
+
+    - name: Set timezone to Asia/Tokyo
+      community.general.timezone:
+        name: Asia/Tokyo
+          
+    - name: Update all packages
+      apt:
+        name: '*'
+        state: latest
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install apt packages
+      apt:
+        name: "{{ common.packages }}"
+        state: present
+
+- name: ufw setting
+  hosts:
+    - server
+  become: True
+  tasks:
+    - name: add rule ssh (from util, stp104, step105)
+      ufw:
+        rule: allow
+        port: 22
+        proto: tcp
+        src: "{{ item }}"
+      loop:
+        - 10.0.0.101/32
+        - 10.0.0.104/32
+        - 10.0.0.105/32
+   
+    - name: enable ufw
+      ufw:
+        state: enabled
+
+- name: add rule kubernetes(6684)
+  hosts:
+    - kubernetes
+  become: True
+  tasks:
+    - name: ufw add rule kubernetes port
+      ufw:
+        rule: allow
+        port: '6684'
+        proto: tcp
+
+
+

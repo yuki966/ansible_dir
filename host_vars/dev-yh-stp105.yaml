@@ -1,0 +1,8 @@
+---
+ansible_host: dev-yh-stp105
+ansible_ssh_user: yukih
+ansible_become_pass: r3v2t8zczn
+ansible_connection: ssh
+ansible_python_interpreter: /usr/bin/python3
+ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
